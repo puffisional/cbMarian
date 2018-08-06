@@ -1,15 +1,13 @@
 import datetime
-from gdax.public_client import PublicClient
+from coinbasepro.authenticated_client import PublicClient
 import time
 import pymysql
 
 c = PublicClient()
 products = c.get_products()
-
 conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='svn78KE!#', db='cbmarian')
 cur = conn.cursor()
 
-cur = conn.cursor()
 startT = endT = 1514764800
 generStart = time.time()
 while endT < generStart:
