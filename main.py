@@ -1,12 +1,13 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from cbMarian.broker import Broker
+
+from cbMarian.futuresBroker import FuturesBroker
 from cbMarian.mainWidget import MainWidget
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    broker = Broker(*Broker.getCredentials())
+    broker = FuturesBroker(*FuturesBroker.getCredentials())
     broker.startPolling()
 
     win = QMainWindow()
