@@ -49,7 +49,7 @@ class FuturesBroker(Broker):
                 else:
                     dealParameters["size"] = float(self.products[product]["min"])
 
-            dealParameters["price"] += 2*float(self.products[product]["increment"])
+            dealParameters["price"] += 0.00001
             dealParameters["price"] = round(dealParameters["price"], abs(
                 decimal.Decimal(self.products[product]["increment"]).as_tuple().exponent))
             dealParameters["side"] = "sell"
@@ -66,7 +66,7 @@ class FuturesBroker(Broker):
                 else:
                     dealParameters["size"] = float(self.products[product]["min"])
 
-            dealParameters["price"] -= 2*float(self.products[product]["increment"])
+            dealParameters["price"] -= 0.00001
             dealParameters["price"] = round(dealParameters["price"], abs(
                 decimal.Decimal(self.products[product]["increment"]).as_tuple().exponent))
             dealParameters["side"] = "buy"
