@@ -45,4 +45,4 @@ class MainWidget(QWidget, Ui_Form):
 
             self.graphListWidget.layout().addWidget(dialog)
             self.plots[product_id] = (
-                curve_item_high, deque(maxlen=3600 * 24), deque(maxlen=3600 * 24))
+                curve_item_high, deque(maxlen=3600 * 10), deque(maxlen=3600 * 10))
