@@ -8,14 +8,14 @@ BUY = 1
 
 
 class FuturesBroker(Broker):
-    dealTreshold = 1
+    dealThreshold = 1
     dealCoeficient = 0.3
     orderPosted = False
     ordersCount = 0
 
     def onRateDiff(self, product, diff, currentRates):
         if self.dealingFlag.isSet(): return
-        if abs(diff) > self.dealTreshold:
+        if abs(diff) > self.dealThreshold:
 
             orders = self.get_orders()[0]
             ordersCount = len(orders)
