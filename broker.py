@@ -64,7 +64,19 @@ class Broker(AuthenticatedClient, QObject):
 
     @staticmethod
     def get_change(current, previous):
-        return 100. * (previous - current) / current
+        if current == 0:
+            return -100
+        elif previous == 0:
+            return 100
+
+        coefficient = 1
+        if current > previous:
+            coefficient = -1
+            current, previous = previous, current
+        return coefficient * ((current - previous) / current) * 100
+
+    # def get_change(current, previous):
+    #     return ((current - previous) / current) * 100
 
     def onRateDiff(self, product, diff, currentRates):
         pass
