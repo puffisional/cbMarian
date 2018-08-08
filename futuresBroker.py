@@ -75,7 +75,13 @@ class FuturesBroker(Broker):
             dealParameters["price"] = round(dealParameters["price"], abs(
                 decimal.Decimal(self.products[product]["increment"]).as_tuple().exponent))
             dealParameters["side"] = "buy"
-            deal = self.buy(**dealParameters)
+
+            if dealParameters["price"] * dealParameters["size"] <= quoteBalance[1]:
+                deal = self.buy(**dealParameters)
+            else:
+                # Not enough money to buy :(
+                self.dealingFlag.clear()
+                return
         else:
             self.dealingFlag.clear()
             return
