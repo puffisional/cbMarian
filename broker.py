@@ -48,7 +48,6 @@ class Broker(AuthenticatedClient, QObject):
 
             time.sleep(0.2)
 
-        print(products)
         self.products = products
         return products
 
@@ -79,7 +78,7 @@ class Broker(AuthenticatedClient, QObject):
                 poutput = self.get_product_trades(product_id=product_id, limit=1, result=[])
                 currentRates = float(poutput[0]["price"])
                 previousRates = product["lastPrice"]
-                ratesDiff = Broker.get_change(currentRates, previousRates)
+                ratesDiff = Broker.get_change(previousRates, currentRates)
                 self.onRateDiff(product_id, ratesDiff, [currentRates, previousRates])
                 self.sigRateDiff.emit(product_id, ratesDiff, [currentRates, previousRates])
                 time.sleep(0.25)
