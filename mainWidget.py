@@ -12,29 +12,29 @@ from cbMarian.ui.mainWidget import Ui_Form
 class MainWidget(QWidget, Ui_Form):
     sigReplot = pyqtSignal()
 
-    def __init__(self, broker, parent=None):
+    def __init__(self, brokers, parent=None):
         QWidget.__init__(self, parent=parent)
-        self.broker = broker
+        self.brokers = brokers
         self.setupUi(self)
         self.setupGraphs()
 
-        self.broker.sigRateDiff.connect(self.onRateDiff)
+        # self.broker.sigRateDiff.connect(self.onRateDiff)
 
-    @pyqtSlot("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
-    def onRateDiff(self, product_id, percentDiff, currentRates):
-        self.plots[product_id][1].append(time.time())
-        self.plots[product_id][2].append(percentDiff)
-        self.plots[product_id][0].setData(self.plots[product_id][1], self.plots[product_id][2])
+    @pyqtSlot("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
+    def onRateDiff(self, broker, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):
+        self.plots[broker][1].append(time.time())
+        self.plots[broker][2].append(rateDiffPercent)
+        self.plots[broker][0].setData(self.plots[broker][1], self.plots[broker][2])
 
     def setupGraphs(self):
         self.plots = {}
 
-        for product_id, product in self.broker.products.items():
+        for broker in self.brokers:
             pen1 = mkPen(color=(0, 72, 255))
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', "k")
 
-            dialog = pg.PlotWidget(title=product_id)
+            dialog = pg.PlotWidget(title=broker.product)
             # dialog = pg.PlotWidget(title="a")
 
             dialog.setLabel("bottom", "Point")
@@ -44,5 +44,7 @@ class MainWidget(QWidget, Ui_Form):
             dialog.addItem(curve_item_high)
 
             self.graphListWidget.layout().addWidget(dialog)
-            self.plots[product_id] = (
+            self.plots[broker] = (
                 curve_item_high, deque(maxlen=3600 * 10), deque(maxlen=3600 * 10))
+
+            broker.sigRateDiff.connect(self.onRateDiff)
