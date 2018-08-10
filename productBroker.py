@@ -1,7 +1,3 @@
-import time
-from threading import Event, Thread
-
-import dateutil.parser
 from PyQt5.QtCore import QObject, pyqtSignal
 from coinbasepro.authenticated_client import AuthenticatedClient
 
@@ -9,8 +5,7 @@ from coinbaseClient import CoinbaseClient
 
 
 class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
-
-    allowTrading = False
+    allowTrading = True
     sigRateDiff = pyqtSignal("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
 
     def __init__(self, product, key, b64secret, passphrase):
@@ -31,27 +26,26 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
         self.settings = {
             "info": {},
             "buy": {
-                "allowTrade": False,
-                "maxLife": 1800,
+                "allowTrade": True,
+                "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.3,
-                "maxTradeRatio": 0.25,
-                "post_only": True
+                "thresholdValue": 0.2,
+                "maxTradeRatio": 0.5,
+                "post_only": False
             },
             "sell": {
-                "allowTrade": False,
-                "maxLife": 1800,
+                "allowTrade": True,
+                "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.3,
-                "maxTradeRatio": 0.25,
-                "post_only": True
+                "thresholdValue": 0.2,
+                "maxTradeRatio": 0.5,
+                "post_only": False
             }
         }
 
         self.refreshProductInfo()
         self.refreshWallet()
         self.refreshDeals()
-        # self.startPolling()
 
     def refreshProductInfo(self):
         for product in self.get_products():
@@ -95,9 +89,15 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
         return self.wallet[self.quotedCurrency]
 
     def onRateDiff(self, lastMarketTrade):
-
-        currentRate = float(lastMarketTrade["price"])
+        lastBrokerDeal = self.brokerDeals["closed"][0]
         lastBrokerRate = float(self.brokerDeals["closed"][0]["price"])
+
+        if lastBrokerDeal["side"] == "sell":
+            currentRate = float(lastMarketTrade["bids"][0][0]) - 0.00001
+        elif lastBrokerDeal["side"] == "buy":
+            currentRate = float(lastMarketTrade["asks"][0][0]) + 0.00001
+
+        # print(self.product, lastBrokerDeal["side"], currentRate)
         rateDiff, rateDiffPercent = self.get_change(currentRate, lastBrokerRate)
         self.sigRateDiff.emit(self, rateDiff, rateDiffPercent, currentRate, lastBrokerRate)
 
@@ -106,9 +106,15 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
 
         if deal is not None:
             if deal["side"] == "buy":
-                self.buy(deal)
+                dealOutput = self.buy(**deal)
+                print(deal)
+                print(dealOutput)
             elif deal["side"] == "sell":
-                self.sell(deal)
+                dealOutput = self.sell(**deal)
+                print(deal)
+                print(dealOutput)
+
+        self.refreshDeals()
 
     def checkDeal(self, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):
         deal = None
@@ -118,14 +124,14 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
             condC = self.settings["buy"]["thresholdType"] == "scalar"
             condD = abs(rateDiff) >= self.settings["buy"]["thresholdValue"]
             if (condA and condB) or (condC and condD):
-                deal = self.prepareSellOrder(currentRate)
+                deal = self.prepareBuyOrder(currentRate)
         elif currentRate > lastBrokerRate:
             condA = self.settings["sell"]["thresholdType"] == "percent"
             condB = abs(rateDiffPercent) >= self.settings["sell"]["thresholdValue"]
             condC = self.settings["sell"]["thresholdType"] == "scalar"
             condD = abs(rateDiff) >= self.settings["sell"]["thresholdValue"]
-            if (condA and condB) or (condB and condC):
-                deal = self.prepareBuyOrder(currentRate)
+            if (condA and condB) or (condC and condD):
+                deal = self.prepareSellOrder(currentRate)
 
         return deal
 
@@ -133,19 +139,20 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
         if not self.settings["buy"]["allowTrade"]: return False
 
         dealParameters = self._initEmptyDeal("buy", currentRate)
-        dealParameters["price"] -= 0.00001
+        # dealParameters["price"] -= 0.00001
         self.refreshWallet()
 
-        baseWallet, quotedWallet = self.baseWallet(), self.quotedWallet()
+        quotedWallet = self.quotedWallet()
         maxTradeRatio = self.settings["buy"]["maxTradeRatio"]
         minimumAmount = self.settings["info"]["base_min_size"]
-        baseBuySize = baseWallet["available"] * maxTradeRatio
+        baseBuySize = round((quotedWallet["available"] * maxTradeRatio / dealParameters["price"]), 8)
 
         if baseBuySize < minimumAmount:
             return None
-        if baseBuySize * dealParameters["price"] > baseWallet["available"]:
+        if baseBuySize * dealParameters["price"] > quotedWallet["available"]:
             return None
 
+        dealParameters["price"] = round(dealParameters["price"], 8)
         dealParameters["size"] = baseBuySize
 
         return dealParameters
@@ -154,16 +161,18 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
         if not self.settings["sell"]["allowTrade"]: return False
 
         dealParameters = self._initEmptyDeal("sell", currentRate)
-        dealParameters["price"] += 0.00001
+        # dealParameters["price"] += 0.00001
         self.refreshWallet()
 
         baseWallet, quotedWallet = self.baseWallet(), self.quotedWallet()
         maxTradeRatio = self.settings["sell"]["maxTradeRatio"]
         minimumAmount = self.settings["info"]["base_min_size"]
-        baseSellSize = baseWallet["available"] * maxTradeRatio
+        baseSellSize = round(baseWallet["available"] * maxTradeRatio, 8)
 
         if baseSellSize < minimumAmount:
             return None
+
+        dealParameters["price"] = round(dealParameters["price"], 8)
         dealParameters["size"] = baseSellSize
 
         return dealParameters

@@ -1,5 +1,4 @@
-import dateutil.parser
+from coinbasepro import public_client
 
-a = {'iso': '2018-08-09T13:19:49.569Z', 'epoch': 1533820789.569}
-print(dateutil.parser.parse('2018-08-09T13:19:49.569Z').timestamp())
-print(a["iso"], a["epoch"])
+pc = public_client.PublicClient()
+print(pc.get_product_order_book("BCH-BTC"))
