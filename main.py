@@ -2,8 +2,8 @@ import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from cbMarian.mainWidget import MainWidget
-from poller import Poller
-from productBroker import ProductBroker
+from cbMarian.poller import Poller
+from cbMarian.productBroker import ProductBroker
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

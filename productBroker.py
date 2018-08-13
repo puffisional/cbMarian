@@ -29,7 +29,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.15,
+                "thresholdValue": 0.2,
                 "maxTradeRatio": 0.25,
                 "allowMinimumTrade": False,
                 "post_only": False
@@ -38,7 +38,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.1,
+                "thresholdValue": 0.2,
                 "maxTradeRatio": 0.9,
                 "allowMinimumTrade": False,
                 "post_only": False
