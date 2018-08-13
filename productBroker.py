@@ -26,18 +26,20 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
             "info": {},
             "buy": {
                 "allowTrade": True,
-                "maxLife": 300,
+                "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.2,
-                "maxTradeRatio": 0.5,
+                "thresholdValue": 0.15,
+                "maxTradeRatio": 0.25,
+                "allowMinimumTrade": False,
                 "post_only": False
             },
             "sell": {
                 "allowTrade": True,
-                "maxLife": 300,
+                "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.2,
-                "maxTradeRatio": 0.5,
+                "thresholdValue": 0.1,
+                "maxTradeRatio": 0.9,
+                "allowMinimumTrade": False,
                 "post_only": False
             }
         }
@@ -68,13 +70,11 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
 
     def refreshDeals(self):
         opened, closed = [], []
-        for order in self.get_orders()[0]:
-            if order["product_id"] == self.product:
-                opened.append(order)
+        for order in self.get_orders(product_id=self.product)[0]:
+            opened.append(order)
 
-        for fill in self.get_fills()[0]:
-            if fill["product_id"] == self.product:
-                closed.append(fill)
+        for fill in self.get_fills(product_id=self.product)[0]:
+            closed.append(fill)
 
         self.brokerDeals = {
             "opened": opened,
