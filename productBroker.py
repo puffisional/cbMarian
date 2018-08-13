@@ -1,7 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from coinbasepro.authenticated_client import AuthenticatedClient
-
-from coinbaseClient import CoinbaseClient
+from cbMarian.coinbaseClient import CoinbaseClient
 
 
 class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
@@ -27,7 +26,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
             "info": {},
             "buy": {
                 "allowTrade": True,
-                "maxLife": 120,
+                "maxLife": 300,
                 "thresholdType": "percent",  # percent | scalar
                 "thresholdValue": 0.2,
                 "maxTradeRatio": 0.5,
@@ -35,7 +34,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
             },
             "sell": {
                 "allowTrade": True,
-                "maxLife": 120,
+                "maxLife": 300,
                 "thresholdType": "percent",  # percent | scalar
                 "thresholdValue": 0.2,
                 "maxTradeRatio": 0.5,
@@ -93,9 +92,9 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
         lastBrokerRate = float(self.brokerDeals["closed"][0]["price"])
 
         if lastBrokerDeal["side"] == "sell":
-            currentRate = float(lastMarketTrade["bids"][0][0]) - 0.00001
+            currentRate = float(lastMarketTrade["asks"][0][0])
         elif lastBrokerDeal["side"] == "buy":
-            currentRate = float(lastMarketTrade["asks"][0][0]) + 0.00001
+            currentRate = float(lastMarketTrade["bids"][0][0])
 
         # print(self.product, lastBrokerDeal["side"], currentRate)
         rateDiff, rateDiffPercent = self.get_change(currentRate, lastBrokerRate)
