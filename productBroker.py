@@ -6,6 +6,7 @@ from cbMarian.coinbaseClient import CoinbaseClient
 class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
     allowTrading = True
     sigRateDiff = pyqtSignal("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
+    sigDealsRefresh = pyqtSignal("PyQt_PyObject")
 
     def __init__(self, product, key, b64secret, passphrase):
         QObject.__init__(self)
@@ -80,6 +81,8 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
             "opened": opened,
             "closed": closed
         }
+
+        self.sigDealsRefresh.emit(self.brokerDeals)
 
     def baseWallet(self):
         return self.wallet[self.baseCurrency]
