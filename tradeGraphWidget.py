@@ -21,6 +21,7 @@ class TradeGraph(pg.PlotWidget):
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', "k")
         pg.PlotWidget.__init__(self, title=broker.product)
+
         self._initPlot()
 
         self.sigRefreshData.connect(self.refreshData)

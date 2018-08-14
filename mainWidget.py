@@ -9,6 +9,7 @@ from pyqtgraph import mkPen
 from cbMarian.ui.mainWidget import Ui_Form
 from tradeGraphWidget import TradeGraph
 from tradeTableWidget import TradeTableWidget
+from walletWidget import WalletWidget
 
 
 class MainWidget(QWidget, Ui_Form):
@@ -30,7 +31,9 @@ class MainWidget(QWidget, Ui_Form):
             wLayout = QGridLayout()
             container.setLayout(wLayout)
             wLayout.addWidget(TradeGraph(broker, dealTypes=["closed"]))
-            wLayout.addWidget(TradeTableWidget(broker, dealTypes=["closed"]))
+            wLayout.addWidget(TradeTableWidget(broker, dealTypes=["opened", "closed"]))
+            wLayout.addWidget(WalletWidget(broker, broker.baseCurrency))
+            wLayout.addWidget(WalletWidget(broker, broker.quotedCurrency))
             self.brokerTabs.addTab(container, broker.product)
 
 

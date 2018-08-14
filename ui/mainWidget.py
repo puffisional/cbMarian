@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(894, 612)
+        Form.resize(1093, 612)
         self.gridLayout = QtWidgets.QGridLayout(Form)
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtWidgets.QSplitter(Form)
@@ -24,9 +24,11 @@ class Ui_Form(object):
         self.gridLayout_2.setSpacing(0)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.brokerTabs = QtWidgets.QTabWidget(self.widget)
+        self.brokerTabs.setMinimumSize(QtCore.QSize(670, 0))
         self.brokerTabs.setObjectName("brokerTabs")
         self.gridLayout_2.addWidget(self.brokerTabs, 0, 0, 1, 1)
         self.graphListWidget = QtWidgets.QWidget(self.splitter)
+        self.graphListWidget.setMinimumSize(QtCore.QSize(400, 0))
         self.graphListWidget.setObjectName("graphListWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.graphListWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)

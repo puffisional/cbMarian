@@ -1,12 +1,11 @@
 import sys
-from collections import OrderedDict
 
-import dateutil.parser
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QHeaderView, QLabel
-from cbMarian.ui.tradeTableWidget import Ui_Form
+
 from cbMarian.productBroker import ProductBroker
+from cbMarian.ui.tradeTableWidget import Ui_Form
+
 
 class TradeTableWidget(QWidget, Ui_Form):
 
@@ -17,7 +16,6 @@ class TradeTableWidget(QWidget, Ui_Form):
         self.dealTypes = dealTypes
         self.deals = {}
         self.setupUi(self)
-
         self.refreshDeals(self.broker.brokerDeals)
 
     def setupUi(self, Form):
@@ -47,8 +45,7 @@ class TradeTableWidget(QWidget, Ui_Form):
                     typeLabel.setStyleSheet("color:green;font-weight:bold")
                 else:
                     typeLabel.setStyleSheet("color:red;font-weight:bold")
-                dealDate = "{:%d.%m.%Y    %H:%M}".format(dateutil.parser.parse(deal["created_at"]))
-
+                dealDate = "{:%d.%m.%Y    %H:%M}".format(self.broker.getLocalDt(deal["created_at"]))
 
                 row = self.tableWidget.rowCount()
                 self.tableWidget.setRowCount(row + 1)
@@ -56,11 +53,13 @@ class TradeTableWidget(QWidget, Ui_Form):
                 self.tableWidget.setCellWidget(row, 1, QLabel(deal["product_id"]))
                 self.tableWidget.setCellWidget(row, 2, QLabel(deal["size"]))
                 self.tableWidget.setCellWidget(row, 3, QLabel(deal["price"]))
-                self.tableWidget.setCellWidget(row, 4, QLabel(deal["fee"]))
+                if "fee" in deal:
+                    self.tableWidget.setCellWidget(row, 4, QLabel(deal["fee"]))
                 self.tableWidget.setCellWidget(row, 5, QLabel(dealDate))
                 self.tableWidget.setCellWidget(row, 6, QLabel(dealTypes))
 
         self.deals = deals
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

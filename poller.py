@@ -56,6 +56,7 @@ class Poller():
                         timeDiff = currentTime - creationTime
                         if timeDiff >= broker.settings[deal["side"]]["maxLife"]:
                             broker.cancel_order(deal["id"])
+                            broker.refreshDeals()
                         time.sleep(0.25)
 
                 lastMarketBook = broker.get_product_order_book(broker.product)
@@ -64,5 +65,3 @@ class Poller():
 
             if count <= 0:
                 count = 25
-
-{'sequence': 329566891, 'bids': [['0.09304', '0.7', 2]], 'asks': [['0.09327', '1.1491243', 1]]}
