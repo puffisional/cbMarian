@@ -8,7 +8,7 @@ from cbMarian.productBroker import ProductBroker
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    myProducts = ["ETH-BTC", "LTC-BTC", "BCH-BTC"]
+    myProducts = ["ETH-BTC", "LTC-BTC", "BCH-BTC", "ETC-BTC"]
     brokers = []
     for product in myProducts:
         broker = ProductBroker(product, *ProductBroker.getCredentials())

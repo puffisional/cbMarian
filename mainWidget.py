@@ -3,10 +3,12 @@ from collections import deque
 
 import pyqtgraph as pg
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import mkPen
 
 from cbMarian.ui.mainWidget import Ui_Form
+from tradeGraphWidget import TradeGraph
+from tradeTableWidget import TradeTableWidget
 
 
 class MainWidget(QWidget, Ui_Form):
@@ -19,6 +21,18 @@ class MainWidget(QWidget, Ui_Form):
         self.setupGraphs()
 
         # self.broker.sigRateDiff.connect(self.onRateDiff)
+
+    def setupUi(self, Form):
+        Ui_Form.setupUi(self, self)
+
+        for broker in self.brokers:
+            container = QWidget()
+            wLayout = QGridLayout()
+            container.setLayout(wLayout)
+            wLayout.addWidget(TradeGraph(broker, dealTypes=["closed"]))
+            wLayout.addWidget(TradeTableWidget(broker, dealTypes=["closed"]))
+            self.brokerTabs.addTab(container, broker.product)
+
 
     @pyqtSlot("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
     def onRateDiff(self, broker, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):

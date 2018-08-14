@@ -29,7 +29,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.2,
+                "thresholdValue": 0.3,
                 "maxTradeRatio": 0.25,
                 "allowMinimumTrade": False,
                 "post_only": False
@@ -38,7 +38,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.2,
+                "thresholdValue": 0.3,
                 "maxTradeRatio": 0.9,
                 "allowMinimumTrade": False,
                 "post_only": False
@@ -101,6 +101,7 @@ class ProductBroker(AuthenticatedClient, CoinbaseClient, QObject):
 
         # print(self.product, lastBrokerDeal["side"], currentRate)
         rateDiff, rateDiffPercent = self.get_change(currentRate, lastBrokerRate)
+
         self.sigRateDiff.emit(self, rateDiff, rateDiffPercent, currentRate, lastBrokerRate)
 
         if len(self.brokerDeals["opened"]) > 0: return

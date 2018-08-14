@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>711</width>
-    <height>557</height>
+    <width>894</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,26 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QWidget" name="widget" native="true">
-      <layout class="QGridLayout" name="gridLayout_2"/>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QTabWidget" name="brokerTabs"/>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="graphListWidget" native="true">
       <layout class="QVBoxLayout" name="verticalLayout"/>
