@@ -6,10 +6,10 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout
 from pyqtgraph import mkPen
 
+from cbMarian.tradeGraphWidget import TradeGraph
+from cbMarian.tradeTableWidget import TradeTableWidget
 from cbMarian.ui.mainWidget import Ui_Form
-from tradeGraphWidget import TradeGraph
-from tradeTableWidget import TradeTableWidget
-from walletWidget import WalletWidget
+from cbMarian.walletWidget import WalletWidget
 
 
 class MainWidget(QWidget, Ui_Form):
@@ -35,7 +35,6 @@ class MainWidget(QWidget, Ui_Form):
             wLayout.addWidget(WalletWidget(broker, broker.baseCurrency))
             wLayout.addWidget(WalletWidget(broker, broker.quotedCurrency))
             self.brokerTabs.addTab(container, broker.product)
-
 
     @pyqtSlot("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
     def onRateDiff(self, broker, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):

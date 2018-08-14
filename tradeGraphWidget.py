@@ -1,18 +1,15 @@
-import pyqtgraph as pg
 import sys
-from collections import OrderedDict
 
 import dateutil.parser
+import pyqtgraph as pg
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QHeaderView, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 from pyqtgraph import mkPen
 
-from cbMarian.ui.tradeTableWidget import Ui_Form
 from cbMarian.productBroker import ProductBroker
 
-class TradeGraph(pg.PlotWidget):
 
+class TradeGraph(pg.PlotWidget):
     sigRefreshData = pyqtSignal()
 
     def __init__(self, broker, dealTypes=["opened", "closed"]):
@@ -36,7 +33,7 @@ class TradeGraph(pg.PlotWidget):
         self.setLabel("bottom", "Point")
         self.showGrid(x=True, y=True, alpha=0.1)
         curve_item_buy = pg.PlotDataItem([], pen=penGreen, antialias=False, autoDownsample=True, clipToView=True,
-                                          symbolPen='w', symbol='h', symbolSize=3)
+                                         symbolPen='w', symbol='h', symbolSize=3)
         curve_item_sell = pg.PlotDataItem([], pen=penRed, antialias=False, autoDownsample=True, clipToView=True,
                                           symbolPen='w', symbol='h', symbolSize=3)
         self.addItem(curve_item_buy)
@@ -72,6 +69,7 @@ class TradeGraph(pg.PlotWidget):
     def refreshData(self):
         self.dealPlots["buy"][0].setData(self.dealPlots["buy"][1], self.dealPlots["buy"][2])
         self.dealPlots["sell"][0].setData(self.dealPlots["sell"][1], self.dealPlots["sell"][2])
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

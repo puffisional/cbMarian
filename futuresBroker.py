@@ -3,9 +3,6 @@ from threading import Thread
 
 from cbMarian.broker import Broker
 
-SELL = 0
-BUY = 1
-
 
 class FuturesBroker(Broker):
     dealThreshold = 1
