@@ -4,10 +4,7 @@ import dateutil.parser
 from PyQt5.QtCore import QObject, pyqtSignal
 from coinbasepro.authenticated_client import AuthenticatedClient
 
-from cbMarian.coinbaseClient import CoinbaseClient
-
-
-class Broker(AuthenticatedClient, CoinbaseClient, QObject):
+class Broker(AuthenticatedClient, QObject):
     allowTrading = True
     sigRateDiff = pyqtSignal("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
     sigDealsRefresh = pyqtSignal("PyQt_PyObject")
@@ -17,7 +14,6 @@ class Broker(AuthenticatedClient, CoinbaseClient, QObject):
         QObject.__init__(self)
         AuthenticatedClient.__init__(self, key, b64secret, passphrase, api_url="https://api.pro.coinbase.com",
                                      timeout=30)
-        CoinbaseClient.__init__(self)
         self.product = product
         self.baseCurrency, self.quotedCurrency = product.split("-")
         self.wallet = {
@@ -169,3 +165,7 @@ class Broker(AuthenticatedClient, CoinbaseClient, QObject):
     def getSqlCredentials(fn="./sqlCredentials.conf"):
         with open(fn) as of:
             return of.readline().split(":")
+
+    @staticmethod
+    def get_change(current, previous):
+        return current - previous, ((current - previous) / previous) * 100.0

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!DOCTYPE config [
+		<!ATTLIST broker id ID #IMPLIED>
+		]>
+<brokers>
+    <broker id="ETC-BTC">
+
+    </broker>
+</brokers>
