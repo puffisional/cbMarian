@@ -40,7 +40,7 @@ class Broker(AuthenticatedClient, QObject):
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
                 "thresholdValue": 0.3,
-                "maxTradeRatio": 0.9,
+                "maxTradeRatio": 0.3,
                 "allowMinimumTrade": False,
                 "post_only": False
             }

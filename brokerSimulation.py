@@ -10,5 +10,17 @@ if __name__ == "__main__":
     sc = SimulatedClient(simEnv, 0)
     print(sc.get_currencies())
 
-    ac = AuthenticatedClient(*Broker.getCredentials())
-    print(ac.get_fundings())
+    ac = Broker("LTC-EUR", *Broker.getCredentials())
+
+    lastBrokerDeals = ac.brokerDeals["closed"]
+
+    side = lastBrokerDeals[0]["side"]
+    dealList = []
+    for index, lastBrokerDeal in enumerate(lastBrokerDeals):
+        dealList.append((float(lastBrokerDeal["price"]), lastBrokerDeal))
+        if lastBrokerDeal["side"] != side:
+            # lastBrokerDeal = lastBrokerDeals[index - 1]
+            break
+
+    sortedDeals = sorted(dealList, key=lambda x: x[0])
+    print(sortedDeals)

@@ -7,17 +7,21 @@ class ProductBroker(Broker):
         lastBrokerDeals = self.brokerDeals["closed"]
 
         side = lastBrokerDeals[0]["side"]
+        dealList = []
         for index, lastBrokerDeal in enumerate(lastBrokerDeals):
+            dealList.append((float(lastBrokerDeal["price"]), lastBrokerDeal))
             if lastBrokerDeal["side"] != side:
-                lastBrokerDeal = lastBrokerDeals[index - 1]
+                # lastBrokerDeal = lastBrokerDeals[index - 1]
                 break
 
-        lastBrokerRate = float(lastBrokerDeal["price"])
+        sortedDeals = sorted(dealList, key=lambda x: x[0])
 
         if lastBrokerDeal["side"] == "sell":
             currentRate = float(lastMarketTrade["asks"][0][0])
+            lastBrokerRate = sortedDeals[-1][0]
         elif lastBrokerDeal["side"] == "buy":
             currentRate = float(lastMarketTrade["bids"][0][0])
+            lastBrokerRate = sortedDeals[0][0]
 
         # print(self.product, lastBrokerDeal["side"], currentRate)
         rateDiff, rateDiffPercent = self.get_change(currentRate, lastBrokerRate)

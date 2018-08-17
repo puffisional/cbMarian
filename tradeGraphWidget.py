@@ -48,9 +48,9 @@ class TradeGraph(pg.PlotWidget):
     def refreshDeals(self, deals):
 
         for dealTypes in self.dealTypes:
+            x1, x2, y, z = [], [], [], []
             if len(deals[dealTypes]) == 0: continue
 
-            x1, x2, y, z = [], [], [], []
             for deal in deals[dealTypes]:
                 typeLabel = QLabel(deal["side"])
                 if deal["side"] == "buy":
