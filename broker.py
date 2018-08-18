@@ -6,7 +6,7 @@ from coinbasepro.authenticated_client import AuthenticatedClient
 
 class Broker(AuthenticatedClient, QObject):
     allowTrading = True
-    sigRateDiff = pyqtSignal("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
+    sigRateDiff = pyqtSignal("PyQt_PyObject", "PyQt_PyObject")
     sigDealsRefresh = pyqtSignal("PyQt_PyObject")
     sigWalletRefresh = pyqtSignal("PyQt_PyObject")
 
@@ -30,8 +30,9 @@ class Broker(AuthenticatedClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.3,
-                "maxTradeRatio": 0.25,
+                "thresholdValue": 0.1,
+                "maxTradeRatio": 0.5,
+                "maxAtThreshold": 3,
                 "allowMinimumTrade": False,
                 "post_only": False
             },
@@ -39,8 +40,9 @@ class Broker(AuthenticatedClient, QObject):
                 "allowTrade": True,
                 "maxLife": 120,
                 "thresholdType": "percent",  # percent | scalar
-                "thresholdValue": 0.3,
-                "maxTradeRatio": 0.3,
+                "thresholdValue": 0.1,
+                "maxTradeRatio": 0.5,
+                "maxAtThreshold": 3,
                 "allowMinimumTrade": False,
                 "post_only": False
             }
@@ -72,7 +74,7 @@ class Broker(AuthenticatedClient, QObject):
 
         self.sigWalletRefresh.emit(self.wallet)
 
-    def refreshDeals(self):
+    def refreshDeals(self, sendSignal=True):
         opened, closed = [], []
         for order in self.get_orders(product_id=self.product)[0]:
             opened.append(order)
@@ -85,7 +87,8 @@ class Broker(AuthenticatedClient, QObject):
             "closed": closed
         }
 
-        self.sigDealsRefresh.emit(self.brokerDeals)
+        if sendSignal:
+            self.sigDealsRefresh.emit(self.brokerDeals)
 
     def baseWallet(self):
         return self.wallet[self.baseCurrency]
@@ -99,7 +102,7 @@ class Broker(AuthenticatedClient, QObject):
     def checkDeal(self, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):
         pass
 
-    def prepareBuyOrder(self, currentRate):
+    def prepareBuyOrder(self, currentRate, rateDiffPercent):
         if not self.settings["buy"]["allowTrade"]: return False
 
         dealParameters = self._initEmptyDeal("buy", currentRate)
@@ -108,8 +111,14 @@ class Broker(AuthenticatedClient, QObject):
 
         quotedWallet = self.quotedWallet()
         maxTradeRatio = self.settings["buy"]["maxTradeRatio"]
+        maxAtThreshold = self.settings["sell"]["maxAtThreshold"]
+        if rateDiffPercent < maxAtThreshold:
+            maxTradeRatio = rateDiffPercent * (maxTradeRatio / maxAtThreshold)
+
         minimumAmount = self.settings["info"]["base_min_size"]
         baseBuySize = round((quotedWallet["available"] * maxTradeRatio / dealParameters["price"]), 8)
+
+        # print(dealParameters)
 
         if baseBuySize < minimumAmount:
             return None
@@ -121,7 +130,7 @@ class Broker(AuthenticatedClient, QObject):
 
         return dealParameters
 
-    def prepareSellOrder(self, currentRate):
+    def prepareSellOrder(self, currentRate, rateDiffPercent):
         if not self.settings["sell"]["allowTrade"]: return False
 
         dealParameters = self._initEmptyDeal("sell", currentRate)
@@ -130,6 +139,10 @@ class Broker(AuthenticatedClient, QObject):
 
         baseWallet, quotedWallet = self.baseWallet(), self.quotedWallet()
         maxTradeRatio = self.settings["sell"]["maxTradeRatio"]
+        maxAtThreshold = self.settings["sell"]["maxAtThreshold"]
+        if rateDiffPercent < maxAtThreshold:
+            maxTradeRatio = rateDiffPercent * (maxTradeRatio / maxAtThreshold)
+
         minimumAmount = self.settings["info"]["base_min_size"]
         baseSellSize = round(baseWallet["available"] * maxTradeRatio, 8)
 

@@ -30,7 +30,7 @@ class TradeGraph(pg.PlotWidget):
         penRed = mkPen(color=(255, 0, 0))
         penGreen = mkPen(color=(0, 255, 0))
 
-        self.setLabel("bottom", "Point")
+        # self.setLabel("bottom", "Point")
         self.showGrid(x=True, y=True, alpha=0.1)
         curve_item_buy = pg.PlotDataItem([], pen=penGreen, antialias=False, autoDownsample=True, clipToView=True,
                                          symbolPen='w', symbol='h', symbolSize=3)

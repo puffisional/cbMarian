@@ -44,7 +44,7 @@ class Poller():
     #             count = 25
 
     def _poll(self):
-        count = 25
+        count = 10
         while self.pollingFlag.isSet():
             count -= 1
             for broker in self.brokers:

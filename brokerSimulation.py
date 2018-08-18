@@ -10,7 +10,7 @@ if __name__ == "__main__":
     sc = SimulatedClient(simEnv, 0)
     print(sc.get_currencies())
 
-    ac = Broker("LTC-EUR", *Broker.getCredentials())
+    ac = Broker("ETH-BTC", *Broker.getCredentials())
 
     lastBrokerDeals = ac.brokerDeals["closed"]
 
@@ -23,4 +23,5 @@ if __name__ == "__main__":
             break
 
     sortedDeals = sorted(dealList, key=lambda x: x[0])
-    print(sortedDeals)
+    for sd in sortedDeals:
+        print(sd)

@@ -36,31 +36,44 @@ class MainWidget(QWidget, Ui_Form):
             wLayout.addWidget(WalletWidget(broker, broker.quotedCurrency))
             self.brokerTabs.addTab(container, broker.product)
 
-    @pyqtSlot("PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject", "PyQt_PyObject")
-    def onRateDiff(self, broker, rateDiff, rateDiffPercent, currentRate, lastBrokerRate):
-        self.plots[broker][1].append(time.time())
-        self.plots[broker][2].append(rateDiffPercent)
-        self.plots[broker][0].setData(self.plots[broker][1], self.plots[broker][2])
+    @pyqtSlot("PyQt_PyObject", "PyQt_PyObject")
+    def onRateDiff(self, broker, tradeRates):
+        currentRate, lastBrokerRate, rateDiff, rateDiffPercent = tradeRates["sell"]
+        self.plots[broker][0][1].append(time.time())
+        self.plots[broker][0][2].append(rateDiffPercent)
+        self.plots[broker][0][0].setData(self.plots[broker][0][1], self.plots[broker][0][2])
+
+        currentRate, lastBrokerRate, rateDiff, rateDiffPercent = tradeRates["buy"]
+        self.plots[broker][1][1].append(time.time())
+        self.plots[broker][1][2].append(rateDiffPercent)
+        self.plots[broker][1][0].setData(self.plots[broker][1][1], self.plots[broker][1][2])
 
     def setupGraphs(self):
         self.plots = {}
 
         for broker in self.brokers:
-            pen1 = mkPen(color=(0, 72, 255))
+            penRed = mkPen(color=(255, 0, 0))
+            penGreen = mkPen(color=(0, 255, 0))
+
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', "k")
 
             dialog = pg.PlotWidget(title=broker.product)
             # dialog = pg.PlotWidget(title="a")
 
-            dialog.setLabel("bottom", "Point")
+            # dialog.setLabel("bottom", "Point")
             dialog.showGrid(x=True, y=True, alpha=0.1)
-            curve_item_high = pg.PlotDataItem([], pen=pen1, antialias=False, autoDownsample=True, clipToView=True,
+            curve_sell = pg.PlotDataItem([], pen=penRed, antialias=False, autoDownsample=True, clipToView=True,
                                               symbols=None)
-            dialog.addItem(curve_item_high)
+            curve_buy = pg.PlotDataItem([], pen=penGreen, antialias=False, autoDownsample=True, clipToView=True,
+                                         symbols=None)
+            dialog.addItem(curve_sell)
+            dialog.addItem(curve_buy)
 
             self.graphListWidget.layout().addWidget(dialog)
             self.plots[broker] = (
-                curve_item_high, deque(maxlen=3600 * 10), deque(maxlen=3600 * 10))
+                (curve_sell, deque(maxlen=3600 * 10), deque(maxlen=3600 * 10)),
+                (curve_buy, deque(maxlen=3600 * 10), deque(maxlen=3600 * 10))
+            )
 
             broker.sigRateDiff.connect(self.onRateDiff)

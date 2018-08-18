@@ -21,14 +21,14 @@ class TradeTableWidget(QWidget, Ui_Form):
     def setupUi(self, Form):
         Ui_Form.setupUi(self, self)
 
-        self.tableWidget.horizontalHeader().resizeSection(0, 40)
-        self.tableWidget.horizontalHeader().resizeSection(1, 70)
-        self.tableWidget.horizontalHeader().resizeSection(2, 80)
-        self.tableWidget.horizontalHeader().resizeSection(3, 80)
+        self.tableWidget.horizontalHeader().resizeSection(0, 40*3)
+        self.tableWidget.horizontalHeader().resizeSection(1, 70*3)
+        self.tableWidget.horizontalHeader().resizeSection(2, 80*3)
+        self.tableWidget.horizontalHeader().resizeSection(3, 80*3)
         self.tableWidget.horizontalHeader().setSectionResizeMode(5, QHeaderView.Interactive)
-        self.tableWidget.horizontalHeader().resizeSection(4, 130)
-        self.tableWidget.horizontalHeader().resizeSection(5, 120)
-        self.tableWidget.horizontalHeader().resizeSection(6, 70)
+        self.tableWidget.horizontalHeader().resizeSection(4, 130*3)
+        self.tableWidget.horizontalHeader().resizeSection(5, 120*3)
+        self.tableWidget.horizontalHeader().resizeSection(6, 70*3)
         self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         self.tableWidget.setStyleSheet("QLabel {margin-left:5px}")
 
