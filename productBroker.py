@@ -4,7 +4,6 @@ from cbMarian.broker import Broker
 class ProductBroker(Broker):
 
     def onRateDiff(self, lastMarketTrade):
-        self.refreshDeals()
         lastBrokerDeals = self.brokerDeals["closed"] + self.brokerDeals["opened"]
 
         side = lastBrokerDeals[0]["side"]
@@ -21,17 +20,8 @@ class ProductBroker(Broker):
             "sell": (float(lastMarketTrade["asks"][0][0]), sortedDeals[-1][0],
                      *self.get_change(float(lastMarketTrade["asks"][0][0]), sortedDeals[-1][0])),
             "buy": (float(lastMarketTrade["bids"][0][0]), sortedDeals[0][0],
-                     *self.get_change(float(lastMarketTrade["bids"][0][0]), sortedDeals[0][0])),
+                    *self.get_change(float(lastMarketTrade["bids"][0][0]), sortedDeals[0][0])),
         }
-        # if lastBrokerDeal["side"] == "sell":
-        #     currentRate = float(lastMarketTrade["asks"][0][0])
-        #     lastBrokerRate = sortedDeals[-1][0]
-        # elif lastBrokerDeal["side"] == "buy":
-        #     currentRate = float(lastMarketTrade["bids"][0][0])
-        #     lastBrokerRate = sortedDeals[0][0]
-
-        # print(self.product, lastBrokerDeal["side"], currentRate)
-        # rateDiff, rateDiffPercent = self.get_change(currentRate, lastBrokerRate)
 
         self.sigRateDiff.emit(self, tradeRates)
 
@@ -47,9 +37,13 @@ class ProductBroker(Broker):
             print(deal)
             print(dealOutput)
 
+            self.refreshDeals()
+
     def checkDeal(self, sellTrade, buyTrade):
         deal = None
+
         currentRate, lastBrokerRate, rateDiff, rateDiffPercent = buyTrade
+        # print(self.product, "buy", currentRate, lastBrokerRate, rateDiff, rateDiffPercent)
         if currentRate < lastBrokerRate:
             condA = self.settings["buy"]["thresholdType"] == "percent"
             condB = abs(rateDiffPercent) >= self.settings["buy"]["thresholdValue"]
@@ -57,9 +51,12 @@ class ProductBroker(Broker):
             condD = abs(rateDiff) >= self.settings["buy"]["thresholdValue"]
             if (condA and condB) or (condC and condD):
                 deal = self.prepareBuyOrder(currentRate, abs(rateDiffPercent))
-                return deal
+
+        if deal is not None:
+            return deal
 
         currentRate, lastBrokerRate, rateDiff, rateDiffPercent = sellTrade
+        # print(self.product, "sell", currentRate, lastBrokerRate, rateDiff, rateDiffPercent)
         if currentRate > lastBrokerRate:
             condA = self.settings["sell"]["thresholdType"] == "percent"
             condB = abs(rateDiffPercent) >= self.settings["sell"]["thresholdValue"]
@@ -67,8 +64,5 @@ class ProductBroker(Broker):
             condD = abs(rateDiff) >= self.settings["sell"]["thresholdValue"]
             if (condA and condB) or (condC and condD):
                 deal = self.prepareSellOrder(currentRate, abs(rateDiffPercent))
-                return deal
 
         return deal
-
-

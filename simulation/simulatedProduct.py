@@ -1,7 +1,7 @@
 import random
 
 
-class ProductSimulator():
+class SimulatedProduct():
 
     def __init__(self, product, initialTradePrice):
         self.product = product
@@ -15,6 +15,6 @@ class ProductSimulator():
 
 if __name__ == "__main__":
 
-    ps = ProductSimulator("ETH-BTC", 1)
+    ps = SimulatedProduct("ETH-BTC", 1)
     for i in range(10000):
         print(ps.getCurrentRate())

@@ -44,7 +44,7 @@ class Poller():
     #             count = 25
 
     def _poll(self):
-        count = 10
+        count = 3
         while self.pollingFlag.isSet():
             count -= 1
             for broker in self.brokers:
@@ -56,12 +56,14 @@ class Poller():
                         timeDiff = currentTime - creationTime
                         if timeDiff >= broker.settings[deal["side"]]["maxLife"]:
                             broker.cancel_order(deal["id"])
-                            broker.refreshDeals()
-                        time.sleep(0.25)
+
+                    broker.refreshDeals()
+                    broker.refreshWallet()
+                        # time.sleep(0.25)
 
                 lastMarketBook = broker.get_product_order_book(broker.product)
                 broker.onRateDiff(lastMarketBook)
-                time.sleep(0.25)
+                time.sleep(0.2)
 
             if count <= 0:
-                count = 25
+                count = 3

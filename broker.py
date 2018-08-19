@@ -28,21 +28,21 @@ class Broker(AuthenticatedClient, QObject):
             "info": {},
             "buy": {
                 "allowTrade": True,
-                "maxLife": 120,
+                "maxLife": 60,
                 "thresholdType": "percent",  # percent | scalar
                 "thresholdValue": 0.1,
                 "maxTradeRatio": 0.5,
-                "maxAtThreshold": 3,
+                "maxAtThreshold": 1,
                 "allowMinimumTrade": False,
                 "post_only": False
             },
             "sell": {
                 "allowTrade": True,
-                "maxLife": 120,
+                "maxLife": 60,
                 "thresholdType": "percent",  # percent | scalar
                 "thresholdValue": 0.1,
                 "maxTradeRatio": 0.5,
-                "maxAtThreshold": 3,
+                "maxAtThreshold": 1,
                 "allowMinimumTrade": False,
                 "post_only": False
             }
@@ -145,6 +145,8 @@ class Broker(AuthenticatedClient, QObject):
 
         minimumAmount = self.settings["info"]["base_min_size"]
         baseSellSize = round(baseWallet["available"] * maxTradeRatio, 8)
+
+        # print(dealParameters)
 
         if baseSellSize < minimumAmount:
             return None
