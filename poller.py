@@ -6,6 +6,7 @@ import dateutil.parser
 
 class Poller():
     pollingFlag = Event()
+    dealRefreshCount = 3
 
     def __init__(self, brokers=[]):
         self.brokers = brokers
@@ -44,7 +45,7 @@ class Poller():
     #             count = 25
 
     def _poll(self):
-        count = 3
+        count = self.dealRefreshCount
         while self.pollingFlag.isSet():
             count -= 1
             for broker in self.brokers:
@@ -66,4 +67,4 @@ class Poller():
                 time.sleep(0.2)
 
             if count <= 0:
-                count = 3
+                count = self.dealRefreshCount
