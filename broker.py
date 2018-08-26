@@ -157,6 +157,8 @@ class Broker(AuthenticatedClient, QObject):
         return dealParameters
 
     def _initEmptyDeal(self, orderType, currentRate):
+        self.refreshWallet()
+
         return {
             "price": currentRate,
             "size": None,

@@ -10,7 +10,9 @@ from cbMarian.productBroker import ProductBroker
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    myProducts = [("LTC-EUR", 0.2)]
+    # myProducts = [("LTC-EUR", 0.2)]
+    # myProducts = [("ETH-BTC", 0.04)]
+    myProducts = [("LTC-EUR", "auto")]
     brokers = []
     for product, balance in myProducts:
         broker = AtomBroker(product, balance, *AtomBroker.getCredentials())
