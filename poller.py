@@ -63,6 +63,7 @@ class Poller():
                         # time.sleep(0.25)
 
                 lastMarketBook = broker.get_product_order_book(broker.product)
+                print(lastMarketBook)
                 broker.onRateDiff(lastMarketBook)
                 time.sleep(0.2)
 

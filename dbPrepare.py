@@ -1,7 +1,9 @@
 import time
+
 import pymysql
-from cbMarian.broker import Broker
 from coinbasepro.authenticated_client import PublicClient
+
+from cbMarian.broker import Broker
 
 c = PublicClient()
 products = c.get_products()
@@ -14,6 +16,11 @@ for product in products:
         product[u"id"].replace("-", "_")))
     cur.execute("create table {0}_tick(dt int unique)".format(product[u"id"].replace("-", "_")))
     cur.execute("insert into {0}_tick values({1})".format(product[u"id"].replace("-", "_"), time.time() - 129600))
+    conn.commit()
+
+    cur.execute(
+        "create table {0}_book(dt int unique, bid float, bid_amount float, bid_counts int, ask float, ask_amount float, ask_counts int)".format(
+            product[u"id"].replace("-", "_")))
     conn.commit()
 
 conn.close()

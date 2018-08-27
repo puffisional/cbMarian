@@ -29,6 +29,7 @@ class AtomBroker(Broker):
 
 
     def onRateDiff(self, lastMarketTrade):
+        return
         if len(self.brokerDeals["opened"]) > 0: return
 
         if self.lastDeal is not None:
